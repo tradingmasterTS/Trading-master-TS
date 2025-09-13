@@ -1,0 +1,404 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TS TRADER</title>
+  <meta name="description" content="TS TRADER — Trading analysis gallery & blog" />
+  <style>
+    :root{--accent:#0b74de;--bg:#0f1720;--card:#0b1220;--muted:#9aa4b2;color-scheme:dark}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#071124 0%,#071628 100%);color:#e6eef8}
+    header{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .logo{display:flex;flex-direction:column}
+    .brand{font-weight:700;font-size:18px;letter-spacing:0.6px}
+    .tag{font-size:11px;color:var(--muted)}
+    nav{display:flex;gap:8px;margin-left:auto}
+    .navbtn{background:transparent;border:0;color:var(--muted);padding:8px 10px;border-radius:8px;font-weight:600}
+    .navbtn.active{color:var(--accent);background:linear-gradient(90deg, rgba(11,116,222,0.08), transparent)}
+    main{padding:16px}
+    .container{max-width:980px;margin:0 auto}
+    .hero{background:linear-gradient(180deg, rgba(11,116,222,0.06), rgba(11,116,222,0.02));padding:16px;border-radius:12px;margin-bottom:16px}
+    .cols{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:900px){.cols{grid-template-columns:1fr 360px}}
+    .card{background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    h2{margin:6px 0 12px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    input[type=file]{color:var(--muted)}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:700}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+    .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    @media(min-width:600px){.gallery{grid-template-columns:repeat(3,1fr)}}
+    .thumb{background:#06111a;padding:8px;border-radius:10px;display:flex;flex-direction:column;gap:8px}
+    .thumb img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+    .meta{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    .small{font-size:12px;padding:6px 8px;border-radius:8px;border:0}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:40}
+    .modal.open{display:flex}
+    .modalcard{max-width:920px;width:96%;background:var(--card);padding:12px;border-radius:12px}
+    .modalcard img{width:100%;max-height:70vh;object-fit:contain;border-radius:8px}
+    footer{padding:18px;text-align:center;color:var(--muted);font-size:13px}
+    .toprow{display:flex;align-items:center;gap:8px}
+    .flexcol{display:flex;flex-direction:column;gap:6px}
+    .hint{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="brand">TS TRADER</div>
+      <div class="tag">Trading analysis · Charts · Notes</div>
+    </div>
+    <nav>
+      <button class="navbtn active" data-page="home">Home</button>
+      <button class="navbtn" data-page="analysis">Analysis</button>
+      <button class="navbtn" data-page="blog">Blog</button>
+      <button class="navbtn" data-page="about">About</button>
+      <button class="navbtn" data-page="contact">Contact</button>
+    </nav>
+  </header>
+  <main>
+    <div class="container">
+      <section id="home" class="page">
+        <div class="hero card">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
+            <div>
+              <h2>Welcome to TS TRADER</h2>
+              <div class="hint">Upload and store your trading analysis screenshots, add notes and categories. Works on your phone — data is stored locally on this device.</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700">Local Storage</div>
+              <div class="hint">IndexedDB (on this browser)</div>
+            </div>
+          </div>
+        </div>
+        <div class="cols">
+          <div>
+            <div class="card">
+              <h3>Quick actions</h3>
+              <div class="actions" style="margin-top:8px">
+                <button class="btn" id="goto-upload">Upload Analysis</button>
+                <button class="btn ghost" id="exportBtn">Export Backup</button>
+                <button class="btn ghost" id="importBtn">Import Backup</button>
+              </div>
+              <p class="hint" style="margin-top:10px">Export saves a .json including images so you can backup or move between devices.</p>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <h3>Filters</h3>
+              <div style="margin-top:8px" class="filters">
+                <select id="categoryFilter" class="small">
+                  <option value="all">All categories</option>
+                  <option>Forex</option>
+                  <option>Crypto</option>
+                  <option>Indices</option>
+                  <option>Stocks</option>
+                </select>
+                <input id="searchInput" class="small" placeholder="Search notes or title" />
+                <button class="small" id="clearFilter">Clear</button>
+              </div>
+            </div>
+          </div>
+          <aside>
+            <div class="card">
+              <h3>Recent uploads</h3>
+              <div id="recentList" style="margin-top:8px"></div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <h3>Tips</h3>
+              <ul style="margin:8px 0;padding-left:18px;color:var(--muted)">
+                <li>Use clear filenames and categories.</li>
+                <li>Resize large images on phone before upload for performance.</li>
+                <li>Export backups regularly.</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section><section id="analysis" class="page" style="display:none">
+    <div class="cols">
+      <div>
+        <div class="card">
+          <h2>Upload Analysis</h2>
+          <form id="uploadForm">
+            <label>Title</label>
+            <input type="text" id="title" placeholder="E.g., EURUSD short idea" required />
+            <label>Category</label>
+            <select id="category">
+              <option>Forex</option>
+              <option>Crypto</option>
+              <option>Indices</option>
+              <option>Stocks</option>
+            </select>
+            <label>Notes</label>
+            <textarea id="notes" rows="4" placeholder="Why the trade, levels, timeframe..."></textarea>
+            <label>Chart / Analysis Image</label>
+            <input type="file" id="file" accept="image/*" required />
+            <div style="margin-top:10px;display:flex;gap:8px">
+              <button class="btn" type="submit">Upload & Save</button>
+              <button class="btn ghost" type="button" id="resetForm">Reset</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Gallery</h3>
+          <div id="gallery" class="gallery" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Sort & Export</h3>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-direction:column">
+            <button class="btn ghost" id="clearAll">Delete All</button>
+            <button class="btn" id="downloadZip" disabled>Download Selected</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h3>Selected</h3>
+          <div id="selectedInfo" style="margin-top:8px;color:var(--muted)">0 items</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="blog" class="page" style="display:none">
+    <div class="card">
+      <h2>Blog / Notes</h2>
+      <p class="hint">(Simple blog placeholder — you can use this area to write longer posts.)</p>
+      <div style="margin-top:12px">
+        <textarea id="postText" rows="6" style="width:100%;border-radius:8px;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);"></textarea>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <input id="postTitle" placeholder="Post title" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;" />
+          <button class="btn" id="publishPost">Publish</button>
+        </div>
+        <div id="posts" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="page" style="display:none">
+    <div class="card">
+      <h2>About TS TRADER</h2>
+      <p class="hint">This is a lightweight single-file website demo built for mobile. Data saved locally in your browser using IndexedDB.</p>
+    </div>
+  </section>
+
+  <section id="contact" class="page" style="display:none">
+    <div class="card">
+      <h2>Contact</h2>
+      <p class="hint">Add your contact details or link social profiles here.</p>
+      <div style="margin-top:8px">Email: <strong>your-email@example.com</strong></div>
+    </div>
+  </section>
+
+</div>
+
+  </main>  <div id="viewModal" class="modal"><div class="modalcard"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong id="mTitle"></strong><div><button class="btn ghost" id="closeModal">Close</button></div></div><img id="mImage" src="" alt=""></div></div>  <footer>TS TRADER • Local demo • Built for mobile-first use</footer>  <input type="file" id="importFile" accept="application/json" style="display:none" />  <script>
+    // ---------- Simple single-file app with IndexedDB storage ----------
+    const dbName = 'ts_trader_db_v1';
+    const storeName = 'analyses';
+    let db;
+
+    function openDB(){
+      return new Promise((resolve,reject)=>{
+        const req = indexedDB.open(dbName,1);
+        req.onupgradeneeded = e => {
+          db = e.target.result;
+          if(!db.objectStoreNames.contains(storeName)){
+            const os = db.createObjectStore(storeName,{keyPath:'id'});
+            os.createIndex('byCategory','category',{unique:false});
+            os.createIndex('byTitle','title',{unique:false});
+          }
+        }
+        req.onsuccess = e => { db = e.target.result; resolve(db); }
+        req.onerror = e => reject(e.target.error);
+      });
+    }
+
+    function saveAnalysis(obj){
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(storeName,'readwrite');
+        const store = tx.objectStore(storeName);
+        store.put(obj);
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = e => reject(e.target.error);
+      });
+    }
+
+    function getAllAnalyses(){
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(storeName,'readonly');
+        const store = tx.objectStore(storeName);
+        const req = store.getAll();
+        req.onsuccess = ()=>resolve(req.result);
+        req.onerror = e=>reject(e.target.error);
+      });
+    }
+
+    function clearAll(){
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(storeName,'readwrite');
+        const store = tx.objectStore(storeName);
+        const req = store.clear();
+        req.onsuccess = ()=>resolve(true);
+        req.onerror = e=>reject(e.target.error);
+      });
+    }
+
+    // convert file to dataURL
+    function fileToDataURL(file){
+      return new Promise((res,rej)=>{
+        const reader = new FileReader();
+        reader.onload = ()=>res(reader.result);
+        reader.onerror = ()=>rej('file-read');
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // UI helpers
+    function $(s){return document.querySelector(s)}
+    function $all(s){return Array.from(document.querySelectorAll(s))}
+
+    // Navigation
+    $all('.navbtn').forEach(b=>b.addEventListener('click',e=>{
+      const page = b.dataset.page;
+      $all('.navbtn').forEach(n=>n.classList.remove('active'));
+      b.classList.add('active');
+      $all('.page').forEach(p=>p.style.display = p.id===page? 'block' : 'none');
+      if(page==='analysis') renderGallery();
+    }));
+
+    // Open DB on load
+    (async()=>{
+      await openDB();
+      renderRecent();
+      renderGallery();
+      renderPosts();
+    })();
+
+    // Upload form
+    $('#uploadForm').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const title = $('#title').value.trim() || 'Untitled';
+      const category = $('#category').value;
+      const notes = $('#notes').value.trim();
+      const file = $('#file').files[0];
+      if(!file) return alert('Choose an image');
+      const dataURL = await fileToDataURL(file);
+      const id = 'a_'+Date.now();
+      const obj = {id,title,category,notes,ts:Date.now(),image:dataURL};
+      await saveAnalysis(obj);
+      $('#uploadForm').reset();
+      alert('Saved locally');
+      renderGallery();
+      renderRecent();
+    });
+
+    $('#resetForm').addEventListener('click', ()=>$('#uploadForm').reset());
+    $('#goto-upload').addEventListener('click', ()=>document.querySelector('[data-page="analysis"]').click());
+
+    // Render gallery
+    async function renderGallery(){
+      const list = await getAllAnalyses();
+      const filter = $('#categoryFilter').value;
+      const q = $('#searchInput').value.trim().toLowerCase();
+      const filtered = list.filter(it=> (filter==='all' || it.category===filter) && (it.title.toLowerCase().includes(q) || it.notes.toLowerCase().includes(q)) ).sort((a,b)=>b.ts - a.ts);
+      const g = $('#gallery'); g.innerHTML='';
+      filtered.forEach(it=>{
+        const d = document.createElement('div'); d.className='thumb';
+        d.innerHTML = `<img src="${it.image}" alt=""><div style="display:flex;flex-direction:column"><div style="font-weight:700">${escapeHtml(it.title)}</div><div class="meta"><div>${it.category}</div><div>${new Date(it.ts).toLocaleString()}</div></div></div>`;
+        d.addEventListener('click', ()=>openModal(it));
+        g.appendChild(d);
+      });
+      $('#selectedInfo').textContent = filtered.length + ' items';
+      $('#downloadZip').disabled = filtered.length===0;
+    }
+
+    $('#categoryFilter').addEventListener('change', renderGallery);
+    $('#searchInput').addEventListener('input', renderGallery);
+    $('#clearFilter').addEventListener('click', ()=>{ $('#categoryFilter').value='all'; $('#searchInput').value=''; renderGallery(); });
+
+    function openModal(it){
+      $('#mTitle').textContent = it.title + ' — ' + it.category;
+      $('#mImage').src = it.image;
+      $('#viewModal').classList.add('open');
+    }
+    $('#closeModal').addEventListener('click', ()=>$('#viewModal').classList.remove('open'));
+
+    // Recent uploads
+    async function renderRecent(){
+      const list = (await getAllAnalyses()).sort((a,b)=>b.ts-a.ts).slice(0,5);
+      const el = $('#recentList'); el.innerHTML='';
+      list.forEach(it=>{
+        const row = document.createElement('div'); row.style.padding='8px 0'; row.style.borderBottom='1px solid rgba(255,255,255,0.02)';
+        row.innerHTML = `<div style="font-weight:700">${escapeHtml(it.title)}</div><div class="hint">${it.category} • ${new Date(it.ts).toLocaleString()}</div>`;
+        el.appendChild(row);
+      });
+    }
+
+    // Delete all
+    $('#clearAll').addEventListener('click', async ()=>{
+      if(!confirm('Delete ALL saved analyses? This cannot be undone.')) return;
+      await clearAll(); renderGallery(); renderRecent(); alert('All deleted');
+    });
+
+    // Backup export/import
+    $('#exportBtn').addEventListener('click', async ()=>{
+      const list = await getAllAnalyses();
+      const blob = new Blob([JSON.stringify(list)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download = 'ts_trader_backup_'+Date.now()+'.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    $('#importBtn').addEventListener('click', ()=>$('#importFile').click());
+    $('#importFile').addEventListener('change', async e=>{
+      const f = e.target.files[0]; if(!f) return; const text = await f.text();
+      try{ const arr = JSON.parse(text); if(!Array.isArray(arr)) throw 'invalid';
+        for(const it of arr){ if(!it.id) it.id = 'im_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); await saveAnalysis(it); }
+        alert('Imported '+arr.length+' items'); renderGallery(); renderRecent();
+      }catch(err){ alert('Import failed: invalid file'); }
+      e.target.value='';
+    });
+
+    // Simple blog posts (saved to localStorage)
+    function renderPosts(){
+      const posts = JSON.parse(localStorage.getItem('ts_posts')||'[]').sort((a,b)=>b.ts-a.ts);
+      const el = $('#posts'); el.innerHTML='';
+      posts.forEach(p=>{
+        const card = document.createElement('div'); card.className='card'; card.style.marginBottom='8px';
+        card.innerHTML = `<div style="font-weight:700">${escapeHtml(p.title)}</div><div class="hint">${new Date(p.ts).toLocaleString()}</div><div style="margin-top:8px">${escapeHtml(p.text)}</div>`;
+        el.appendChild(card);
+      });
+    }
+    $('#publishPost').addEventListener('click', ()=>{
+      const title = $('#postTitle').value.trim(); const text = $('#postText').value.trim(); if(!title || !text) return alert('Add title and text');
+      const posts = JSON.parse(localStorage.getItem('ts_posts')||'[]'); posts.push({title,text,ts:Date.now()}); localStorage.setItem('ts_posts',JSON.stringify(posts)); $('#postTitle').value=''; $('#postText').value=''; renderPosts(); alert('Posted');
+    });
+
+    // Simple escape
+    function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    // Download selected (for now download all filtered items as separate images)
+    $('#downloadZip').addEventListener('click', async ()=>{
+      const items = (await getAllAnalyses()).sort((a,b)=>b.ts-a.ts);
+      const filter = $('#categoryFilter').value; const q = $('#searchInput').value.trim().toLowerCase();
+      const filtered = items.filter(it=> (filter==='all' || it.category===filter) && (it.title.toLowerCase().includes(q) || it.notes.toLowerCase().includes(q)) );
+      if(filtered.length===0) return alert('Nothing to download');
+      // create a single json with base64 images
+      const blob = new Blob([JSON.stringify(filtered)],{type:'application/json'});
+      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = 'tstrader_images_'+Date.now()+'.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // small export/import for posts
+
+    // Keyboard / UX helpers
+    document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible'){ renderRecent(); } });
+
+    // End
+  </script></body>
+</html>

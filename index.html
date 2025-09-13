@@ -7,6 +7,58 @@
   <title>TS TRADER</title>
   <meta name="description" content="TS TRADER — Trading analysis gallery & blog" />
   <style>
+    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS TRADER</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff; /* সাদা ব্যাকগ্রাউন্ড */
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Watermark design */
+    body::before {
+      content: "TS TRADER   TS TRADER   TS TRADER   TS TRADER   TS TRADER";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      font-size: 60px;
+      font-weight: bold;
+      color: transparent;
+      background: linear-gradient(45deg, red, orange, green, blue, purple);
+      -webkit-background-clip: text;
+      background-clip: text;
+      opacity: 0.08; /* হালকা যেন থাকে */
+      transform: rotate(-30deg);
+      white-space: pre;
+      line-height: 120px;
+      z-index: -1;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 100px;
+      color: #333;
+    }
+
+    p {
+      text-align: center;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Welcome to TS TRADER</h1>
+  <p>This is my trading website hosted on GitHub Pages.</p>
+
     :root{--accent:#0b74de;--bg:#0f1720;--card:#0b1220;--muted:#9aa4b2;color-scheme:dark}
     *{box-sizing:border-box}
     html,body{height:100%}
